@@ -45,6 +45,7 @@ public class ChatUser {
         if(this.source ==null)return Default;
         return "https://graph.facebook.com/v2.3/"+ this.source.info.id +"/picture?height=256&width=256";
     }
+    
     public String getTimeString() {
         Date time_ = new Date(time);
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time_);
