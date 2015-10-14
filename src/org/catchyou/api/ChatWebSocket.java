@@ -1,7 +1,5 @@
 package org.catchyou.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import org.catchyou.api.models.ChatData;
 import org.catchyou.api.models.ChatType;
 import org.java_websocket.client.WebSocketClient;
@@ -9,9 +7,18 @@ import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.serialization.*;
+import org.json.serialization.DeserializeException;
+import org.json.serialization.JSONConvert;
+import org.json.serialization.SerializeException;
 
-public abstract class ChatWebSocket extends WebSocketClient{
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Created by XuPeiYao on 2015/10/14.
+ */
+public abstract class ChatWebSocket extends WebSocketClient {
+
     public ChatWebSocket(String Token) throws URISyntaxException {
         super(new URI("ws://test.gofa.tw/api/chatroom/socket?token=" + Token),new Draft_17());
     }

@@ -1,6 +1,7 @@
 package org.catchyou.api;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -14,6 +15,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import org.catchyou.api.models.ChatUser;
 import org.catchyou.api.models.UserInfo;
 import org.catchyou.api.models.ScanLog;
 import org.catchyou.api.models.FbUserInfo;
@@ -61,16 +63,12 @@ public class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
-    public HashMap<String, FbUserInfo> Scan(String[] MacList) throws UnsupportedEncodingException {
+    public HashMap<String, FbUserInfo> Scan(Object[] MacList) throws UnsupportedEncodingException {
         try {
             List<NameValuePair> Params = new ArrayList<NameValuePair>();
 
-            String MacListString = "";
-            for (String Mac : MacList) {
-                if (MacListString.length() != 0) MacListString += ",";
-                MacListString += Mac;
-            }
-
+            String MacListString = TextUtils.join(",", MacList);
+            
             Params.add(new BasicNameValuePair("MacList", MacListString));
 
             JSONObject JSONResult = RequestApi(Host + "scan/usermapping", Params).getJSONObject("result");
@@ -112,17 +110,40 @@ public class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
+    public ArrayList<ChatUser> ChatUsers(int Index , int Length){
+        try {
+            List<NameValuePair> Params = new ArrayList<NameValuePair>();
+
+            Params.add(new BasicNameValuePair("index", Integer.toString(Index)));
+            Params.add(new BasicNameValuePair("length", Integer.toString(Length)));
+
+            JSONArray JSONResult = RequestApi(Host + "chatroom/chatUsers", Params).getJSONArray("result");
+
+            ArrayList<ChatUser> Result = new ArrayList<ChatUser>();
+
+            for (int i = 0; i < JSONResult.length(); i++) {
+                JSONObject obj = JSONResult.getJSONObject(i);
+                Result.add((ChatUser) JSONConvert.deserialize(ChatUser.class, obj));
+            }
+
+            return Result;
+        } catch (Exception ex) {
+            Logger.getLogger(CatchYouSDK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     @Override
     protected Object doInBackground(Object... params) {
         try {
             if (params[0].equals(LOGIN)) {
                 return Login((String) params[1]);
             } else if (params[0].equals(USERMAPPING)) {
-                return Scan((String[]) params[1]);
+                return Scan((Object[]) params[1]);
             } else if (params[0].equals(SCANLOGS)) {
                 return ScanLogs((int) params[1], (int) params[2]);
-            } else if (params[0].equals(USERMAPPING_CHAT)) {
-
+            } else if (params[0].equals(CHAT_HISTORY_USERLIST)) {
+                return ChatUsers((int) params[1],(int)params[2]);
             }
         } catch (Exception e) {
             System.out.println(e);
