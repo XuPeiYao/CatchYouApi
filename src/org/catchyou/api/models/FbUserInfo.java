@@ -33,11 +33,15 @@ public class FbUserInfo {
     @JSONProperty(key = "cover")
     public Cover cover;
 
-    public String GetName() {
-        return name_format.replaceAll("\\{last\\}", SafeString(last_name)).replaceAll("\\{first\\}", SafeString(first_name)).replaceAll("\\{middle\\}", SafeString(middle_name));
+    public String getName() {
+        return name_format.replaceAll("\\{last\\}", safeString(last_name)).replaceAll("\\{first\\}", safeString(first_name)).replaceAll("\\{middle\\}", safeString(middle_name));
     }
 
-    private String SafeString(String Value) {
+    public String getPhotoSticker(){
+        return "https://graph.facebook.com/v2.3/"+ this.id +"/picture?height=256&width=256";
+    }
+    
+    private String safeString(String Value) {
         return Value != null ? Value : "";
     }
 }

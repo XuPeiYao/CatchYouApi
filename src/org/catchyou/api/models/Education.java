@@ -5,13 +5,13 @@ import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
 public class Education {
-    @JSONProperty(key = "school")
+    @JSONProperty
     public KeyName school;
 
-    @JSONProperty(key = "type")
+    @JSONProperty
     public String type;
 
-    @JSONProperty(key = "year")
+    @JSONProperty
     public KeyName year;
 
     @JSONProperty(key = "concentration")

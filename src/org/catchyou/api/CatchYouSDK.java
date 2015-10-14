@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
+public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
     private String Host = "http://test.gofa.tw/api/";
     public final String LOGIN = "LOGIN";
     public final String USERMAPPING = "USERMAPPING";
@@ -151,6 +151,8 @@ public class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
+    protected abstract void onPostExecute(Object Result);
+    
     private JSONObject RequestApi(String Url, List<NameValuePair> Params) throws JSONException, IOException {
         HttpClient Client = new DefaultHttpClient();
         HttpPost Post = new HttpPost(Url);

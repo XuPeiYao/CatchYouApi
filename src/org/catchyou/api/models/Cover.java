@@ -10,12 +10,12 @@ import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
 public class Cover {
-    @JSONProperty(key = "id")
+    @JSONProperty
     public String id;
 
-    @JSONProperty(key = "offset_y")
+    @JSONProperty
     public int offset_y;
 
-    @JSONProperty(key = "source")
+    @JSONProperty
     public String source;
 }

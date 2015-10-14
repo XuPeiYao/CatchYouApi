@@ -5,10 +5,10 @@ import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
 public class Work {
-    @JSONProperty(key = "employer")
+    @JSONProperty
     public KeyName employer;
 
-    @JSONProperty(key = "position")
+    @JSONProperty
     public KeyName position;
 
     @JSONProperty(key = "start_date")

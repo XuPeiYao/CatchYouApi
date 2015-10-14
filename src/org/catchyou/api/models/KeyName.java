@@ -5,9 +5,9 @@ import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
 public class KeyName {
-    @JSONProperty(key = "id")
+    @JSONProperty
     public String id;
 
-    @JSONProperty(key = "name")
+    @JSONProperty
     public String name;
 }
