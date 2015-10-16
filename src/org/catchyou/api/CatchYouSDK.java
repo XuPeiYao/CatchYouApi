@@ -131,9 +131,10 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
-    public ArrayList<ChatData> ChatLogs(long baseTime,int Index,int Length) throws JSONException, IOException, DeserializeException{
+    public ArrayList<ChatData> ChatLogs(String uid,long baseTime,int Index,int Length) throws JSONException, IOException, DeserializeException{
         List<NameValuePair> Params = new ArrayList<NameValuePair>();
 
+        Params.add(new BasicNameValuePair("uid", uid));
         Params.add(new BasicNameValuePair("basetime", Long.toString(baseTime)));
         Params.add(new BasicNameValuePair("index", Integer.toString(Index)));
         Params.add(new BasicNameValuePair("length", Integer.toString(Length)));
@@ -162,7 +163,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
             } else if (params[0].equals(CHAT_HISTORY_USERLIST)) {
                 return ChatUsers((int) params[1],(int)params[2]);
             } else if(params[0].equals(CHAT_HISTORY_MESSAGE)){
-                return ChatLogs((long)params[1], (int)params[2], (int)params[3]);
+                return ChatLogs((String)params[1],(long)params[2], (int)params[3], (int)params[4]);
             }
         } catch (Exception e) {
             System.out.println(e);
