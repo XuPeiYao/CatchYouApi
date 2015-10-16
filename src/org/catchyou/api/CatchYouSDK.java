@@ -19,8 +19,6 @@ import org.catchyou.api.models.ChatUser;
 import org.catchyou.api.models.UserInfo;
 import org.catchyou.api.models.ScanLog;
 import org.catchyou.api.models.FbUserInfo;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,14 +26,14 @@ import org.json.serialization.JSONConvert;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.catchyou.api.models.ChatData;
+import org.json.serialization.DeserializeException;
 
 public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
     private String Host = "http://test.gofa.tw/api/";
@@ -133,6 +131,25 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
+    public ArrayList<ChatData> ChatLogs(long baseTime,int Index,int Length) throws JSONException, IOException, DeserializeException{
+        List<NameValuePair> Params = new ArrayList<NameValuePair>();
+
+        Params.add(new BasicNameValuePair("basetime", Long.toString(baseTime)));
+        Params.add(new BasicNameValuePair("index", Integer.toString(Index)));
+        Params.add(new BasicNameValuePair("length", Integer.toString(Length)));
+
+        JSONArray JSONResult = RequestApi(Host + "chatroom/ChatHistory", Params).getJSONArray("result");
+        
+        ArrayList<ChatData> Result = new ArrayList<ChatData>();
+
+        for (int i = 0; i < JSONResult.length(); i++) {
+            JSONObject obj = JSONResult.getJSONObject(i);
+            Result.add((ChatData) JSONConvert.deserialize(ChatData.class, obj));
+        }
+
+        return Result;
+    }
+    
     @Override
     protected Object doInBackground(Object... params) {
         try {
@@ -144,6 +161,8 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
                 return ScanLogs((int) params[1], (int) params[2]);
             } else if (params[0].equals(CHAT_HISTORY_USERLIST)) {
                 return ChatUsers((int) params[1],(int)params[2]);
+            } else if(params[0].equals(CHAT_HISTORY_MESSAGE)){
+                return ChatLogs((long)params[1], (int)params[2], (int)params[3]);
             }
         } catch (Exception e) {
             System.out.println(e);

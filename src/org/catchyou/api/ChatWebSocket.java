@@ -44,7 +44,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
                 ping.type= ChatType.Ping;
                 send(ping);
             }
-        }, 1000*30);
+        }, 0,1000*30);
     }
     
     @Override
