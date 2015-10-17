@@ -74,7 +74,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
         ChatData data = new ChatData();
         data.type = ChatType.RequestInfo;
         data.targetUId = TargetUId;
-        data.content = true;
+        data.content = Content;
         send(data);
     }
 
