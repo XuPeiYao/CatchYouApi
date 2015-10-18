@@ -28,12 +28,16 @@ public class ChatUser {
 
     public String getTargetName(String Default) {
         if(this.target == null)return Default;
-        return this.target.info.getName();
+        String result = this.target.info.getName();
+        if(result == null)return Default;
+        return result;
     }
     
     public String getSourceName(String Default) {
         if(this.source == null)return Default;
-        return this.source.info.getName();
+        String result = this.source.info.getName();
+        if(result == null)return Default;
+        return result;
     }
     
     public Object getTargetPhotoSticker(Object Default){

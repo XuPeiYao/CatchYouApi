@@ -34,6 +34,7 @@ public class FbUserInfo {
     public Cover cover;
 
     public String getName() {
+        if(name_format == null)return null;
         return name_format.replaceAll("\\{last\\}", safeString(last_name)).replaceAll("\\{first\\}", safeString(first_name)).replaceAll("\\{middle\\}", safeString(middle_name));
     }
 
