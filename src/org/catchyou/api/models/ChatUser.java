@@ -42,12 +42,16 @@ public class ChatUser {
     
     public Object getTargetPhotoSticker(Object Default){
         if(this.target ==null)return Default;
-        return "https://graph.facebook.com/v2.3/"+ this.target.info.id +"/picture?height=256&width=256";
+        String result = this.target.info.getPhotoSticker();
+        if(result == null)return Default;
+        return result;
     }
 
     public Object getSourcePhotoSticker(Object Default){
         if(this.source ==null)return Default;
-        return "https://graph.facebook.com/v2.3/"+ this.source.info.id +"/picture?height=256&width=256";
+        String result = this.source.info.getPhotoSticker();
+        if(result == null)return Default;
+        return result;
     }
     
     public String getTimeString() {

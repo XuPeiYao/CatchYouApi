@@ -39,7 +39,8 @@ public class FbUserInfo {
     }
 
     public String getPhotoSticker(){
-        return "https://graph.facebook.com/v2.3/"+ this.id +"/picture?height=256&width=256";
+        if(id==null)return null;
+        return "https://graph.facebook.com/v2.3/"+ id +"/picture?height=256&width=256";
     }
     
     private String safeString(String Value) {
