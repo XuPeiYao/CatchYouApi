@@ -26,10 +26,17 @@ public abstract class ChatWebSocket extends WebSocketClient {
     }
     
     Timer timer = null;
+    int timeout = 50;
     @Override
     public void onOpen(ServerHandshake handshakedata){
         startPingTimer();
+        timeout = 50;
         onConnect(handshakedata);
+    }
+    
+    @Override
+    public void onClose(int code, String reason, boolean remote){
+        timer.cancel();
     }
     
     public abstract void onConnect(ServerHandshake handshakedata);
@@ -40,11 +47,13 @@ public abstract class ChatWebSocket extends WebSocketClient {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                timeout --;
+                if(timeout >= 0)return;
                 ChatData ping = new ChatData();
                 ping.type= ChatType.Ping;
                 send(ping);
             }
-        }, 0,1000*30);
+        }, 0,1000);
     }
     
     @Override
@@ -53,6 +62,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         try {
+            timeout--;
             onMessage(JSONConvert.deserialize(ChatData.class,new JSONObject(message)));
         } catch (DeserializeException e) {
             e.printStackTrace();
@@ -110,6 +120,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
     public void send(ChatData data) {
         try{
             this.send(JSONConvert.serialize(data).toString());
+            timeout = 50;
         }catch(Exception e){
             
         }

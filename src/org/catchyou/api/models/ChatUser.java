@@ -28,30 +28,22 @@ public class ChatUser {
 
     public String getTargetName(String Default) {
         if(this.target == null)return Default;
-        String result = this.target.info.getName();
-        if(result == null)return Default;
-        return result;
+        return this.target.info.getName(Default);
     }
     
     public String getSourceName(String Default) {
         if(this.source == null)return Default;
-        String result = this.source.info.getName();
-        if(result == null)return Default;
-        return result;
+        return this.source.info.getName(Default);
     }
     
     public Object getTargetPhotoSticker(Object Default){
         if(this.target ==null)return Default;
-        String result = this.target.info.getPhotoSticker();
-        if(result == null)return Default;
-        return result;
+        return this.target.info.getPhotoSticker(Default);
     }
 
     public Object getSourcePhotoSticker(Object Default){
-        if(this.source ==null)return Default;
-        String result = this.source.info.getPhotoSticker();
-        if(result == null)return Default;
-        return result;
+        if(this.source == null)return Default;
+        return this.source.info.getPhotoSticker(Default);
     }
     
     public String getTimeString() {
