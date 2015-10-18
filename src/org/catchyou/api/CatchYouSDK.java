@@ -61,7 +61,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
-    public HashMap<String, FbUserInfo> Scan(Object[] MacList) throws UnsupportedEncodingException {
+    public HashMap<String, UserInfo> Scan(Object[] MacList) throws UnsupportedEncodingException {
         try {
             List<NameValuePair> Params = new ArrayList<NameValuePair>();
 
@@ -71,11 +71,11 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
 
             JSONObject JSONResult = RequestApi(Host + "scan/usermapping", Params).getJSONObject("result");
 
-            HashMap<String, FbUserInfo> Result = new HashMap<String, FbUserInfo>();
+            HashMap<String, UserInfo> Result = new HashMap<String, UserInfo>();
             Iterator Keys = JSONResult.keys();
             while (Keys.hasNext()) {
                 String Key = (String) Keys.next();
-                Result.put(Key, (FbUserInfo) JSONConvert.deserialize(FbUserInfo.class, JSONResult.getJSONObject(Key)));
+                Result.put(Key, (UserInfo) JSONConvert.deserialize(UserInfo.class, JSONResult.getJSONObject(Key)));
             }
 
             return Result;
@@ -85,13 +85,13 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return null;
     }
 
-    public ArrayList<ScanLog> ScanLogs(int Index, int Length) {
+    public ArrayList<ScanLog> ScanLogs(long baseTime,int Index, int Length) {
         try {
             List<NameValuePair> Params = new ArrayList<NameValuePair>();
 
             Params.add(new BasicNameValuePair("index", Integer.toString(Index)));
             Params.add(new BasicNameValuePair("length", Integer.toString(Length)));
-
+            Params.add(new BasicNameValuePair("basetime", Long.toString(baseTime)));
             JSONArray JSONResult = RequestApi(Host + "scan/logList", Params).getJSONArray("result");
 
             ArrayList<ScanLog> Result = new ArrayList<ScanLog>();
@@ -159,7 +159,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
             } else if (params[0].equals(USERMAPPING)) {
                 return Scan((Object[]) params[1]);
             } else if (params[0].equals(SCANLOGS)) {
-                return ScanLogs((int) params[1], (int) params[2]);
+                return ScanLogs((long)params[1],(int) params[2], (int) params[3]);
             } else if (params[0].equals(CHAT_HISTORY_USERLIST)) {
                 return ChatUsers((int) params[1],(int)params[2]);
             } else if(params[0].equals(CHAT_HISTORY_MESSAGE)){
