@@ -1,5 +1,6 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
@@ -11,7 +12,7 @@ import org.json.serialization.DeserializeException;
 import org.json.serialization.JSONConvert;
 
 @JSONSerializable
-public class ChatData {
+public class ChatData implements Serializable {
     @JSONProperty
     public ChatType type;
 

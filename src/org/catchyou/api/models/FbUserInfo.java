@@ -1,12 +1,14 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
+import org.catchyou.api.converters.FbIdConverter;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
 
 @JSONSerializable
-public class FbUserInfo {
-    @JSONProperty(converterType = FbUserInfo.class)
+public class FbUserInfo implements Serializable {
+    @JSONProperty(converterType = FbIdConverter.class)
     public String id;
 
     @JSONProperty

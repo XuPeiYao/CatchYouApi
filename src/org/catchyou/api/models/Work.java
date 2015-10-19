@@ -1,10 +1,11 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
-public class Work {
+public class Work implements Serializable{
     @JSONProperty
     public KeyName employer;
 

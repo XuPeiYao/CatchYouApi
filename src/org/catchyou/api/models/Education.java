@@ -1,10 +1,11 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
-public class Education {
+public class Education implements Serializable {
     @JSONProperty
     public KeyName school;
 

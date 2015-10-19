@@ -1,5 +1,6 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
@@ -7,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @JSONSerializable
-public class ScanLog {
+public class ScanLog implements Serializable {
     @JSONProperty
     public String id;
 

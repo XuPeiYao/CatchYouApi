@@ -5,11 +5,12 @@
  */
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
-public class Cover {
+public class Cover  implements Serializable{
     @JSONProperty
     public String id;
 
