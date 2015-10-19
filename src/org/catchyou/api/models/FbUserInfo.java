@@ -6,7 +6,7 @@ import org.json.serialization.JSONSerializable;
 
 @JSONSerializable
 public class FbUserInfo {
-    @JSONProperty
+    @JSONProperty(converterType = FbUserInfo.class)
     public String id;
 
     @JSONProperty
