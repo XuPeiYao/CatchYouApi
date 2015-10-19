@@ -1,10 +1,6 @@
 package org.catchyou.api.converters;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import android.util.Base64;
 import org.json.serialization.DeserializeException;
 import org.json.serialization.IJSONConverter;
 import org.json.serialization.SerializeException;
@@ -16,20 +12,15 @@ public class FbIdConverter implements IJSONConverter{
         String str = (String)obj;
         byte[] strBytes = str.getBytes();
         for(int i = 0 ; i < strBytes.length ;i++)strBytes[i] = (byte) ~strBytes[i];
-        return Base64.encode(strBytes);
+        return Base64.encode(strBytes,Base64.DEFAULT);
     }
 
     @Override
     public <T> T deserialize(Class<T> type, Object obj) throws DeserializeException {
-        try {
-            String str = (String)obj;
-            byte[] strBytes = Base64.decode(str);
-            for(int i = 0 ; i < strBytes.length ;i++)strBytes[i] = (byte) ~strBytes[i];
-            return (T) new String(strBytes);
-        } catch (Base64DecodingException ex) {
-            Logger.getLogger(FbIdConverter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        String str = (String)obj;
+        byte[] strBytes = Base64.decode(str,Base64.DEFAULT);
+        for(int i = 0 ; i < strBytes.length ;i++)strBytes[i] = (byte) ~strBytes[i];
+        return (T) new String(strBytes);
     }
     
     public static void main(String... args) throws DeserializeException, SerializeException{
