@@ -1,5 +1,6 @@
 package org.catchyou.api.models;
 
+import java.io.Serializable;
 import org.json.serialization.JSONProperty;
 import org.json.serialization.JSONSerializable;
 
@@ -10,7 +11,7 @@ import java.util.Date;
  * Created by XuPeiYao on 2015/10/14.
  */
 @JSONSerializable
-public class ChatUser {
+public class ChatUser implements Serializable{
     @JSONProperty
     public String sourceUId;
 
