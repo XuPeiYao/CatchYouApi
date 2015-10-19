@@ -25,7 +25,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
         super(new URI("ws://test.gofa.tw/api/chatroom/socket?token=" + Token),new Draft_17());
     }
     
-    Timer timer = null;
+    Timer timer = null,requestInfoTimer=null;
     int timeout = 50;
     @Override
     public void onOpen(ServerHandshake handshakedata){
@@ -62,8 +62,13 @@ public abstract class ChatWebSocket extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         try {
-            timeout--;
-            onMessage(JSONConvert.deserialize(ChatData.class,new JSONObject(message)));
+            timeout=50;
+            
+            ChatData Data = JSONConvert.deserialize(ChatData.class,new JSONObject(message));
+            
+            if(Data.type == ChatType.RequestInfo && requestInfoTimer!=null)requestInfoTimer.cancel();
+            
+            onMessage(Data);
         } catch (DeserializeException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -80,12 +85,21 @@ public abstract class ChatWebSocket extends WebSocketClient {
         send(data);
     }
 
-    public void sendRequestInfo(String TargetUId,Object Content) {
+    public void sendRequestInfo(final String TargetUId,final Object Content) {
         ChatData data = new ChatData();
         data.type = ChatType.RequestInfo;
         data.targetUId = TargetUId;
         data.content = Content;
         send(data);
+        
+        if(requestInfoTimer!=null)requestInfoTimer.cancel();
+        requestInfoTimer = new Timer(true);
+        requestInfoTimer.schedule(new TimerTask(){
+            @Override
+            public void run() {
+                sendRequestInfo(TargetUId,Content);
+            }
+        }, 1000 * 5);
     }
 
     public void sendText(String TargetUId,String Message) {
