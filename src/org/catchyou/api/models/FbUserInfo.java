@@ -43,6 +43,7 @@ public class FbUserInfo implements Serializable {
     
     public Object getPhotoSticker(){return getPhotoSticker(null);}
     public Object getPhotoSticker(Object Default){
+        if(isAnonymou())return Default;
         if(id==null)return Default;
         return "https://graph.facebook.com/v2.3/"+ id +"/picture?height=256&width=256";
     }
