@@ -86,20 +86,18 @@ public abstract class ChatWebSocket extends WebSocketClient {
     }
 
     public void sendRequestInfo(final String TargetUId,final Object Content) {
-        ChatData data = new ChatData();
-        data.type = ChatType.RequestInfo;
-        data.targetUId = TargetUId;
-        data.content = Content;
-        send(data);
-        
         if(requestInfoTimer!=null)requestInfoTimer.cancel();
         requestInfoTimer = new Timer(true);
         requestInfoTimer.schedule(new TimerTask(){
             @Override
             public void run() {
-                sendRequestInfo(TargetUId,Content);
+                ChatData data = new ChatData();
+                data.type = ChatType.RequestInfo;
+                data.targetUId = TargetUId;
+                data.content = Content;
+                send(data);
             }
-        }, 1000 * 5);
+        }, 0,1000 * 2);
     }
 
     public void sendText(String TargetUId,String Message) {
