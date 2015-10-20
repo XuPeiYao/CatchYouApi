@@ -9,6 +9,7 @@ import org.json.serialization.JSONConvert;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_17;
 import org.java_websocket.handshake.ServerHandshake;
@@ -20,7 +21,9 @@ public abstract class ChatWebSocket extends WebSocketClient {
     public final Object RequestUserData = null;
     public final boolean RequestUserInfoOK = true;
     
-    Timer timeoutTimer;String token;
+    Timer timeoutTimer;
+    Timer requestTimeoutTimer;
+    String token;
     int defaultTimeout = 50;
     int timeout;
 
@@ -85,6 +88,16 @@ public abstract class ChatWebSocket extends WebSocketClient {
         data.content = Content;
         this.send(data);
     }
+    
+    public void reTryRequestInfo(final String TargetUId,final Object Content){//我們曾經在這邊奮鬥
+        requestTimeoutTimer = new Timer(true);
+        requestTimeoutTimer.schedule(new TimerTask(){
+            @Override
+            public void run() {
+                sendRequestInfo(TargetUId, Content);
+            }            
+        },0,1000);
+    }
 
     /**
      * 對指定目標使用者送出文字訊息
@@ -148,7 +161,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
             this.timeout = this.defaultTimeout;
             this.send(JSONConvert.serialize(data).toString());
         }catch(Exception ex){
-            this.onException(ex);
+            
         }
     }
 
@@ -167,6 +180,10 @@ public abstract class ChatWebSocket extends WebSocketClient {
         this.onConnect();
     }
     
+    public boolean isOpen(){
+        return this.getReadyState() == WebSocket.READYSTATE.OPEN;
+    }
+    
     @Override
     public void onMessage(String string) {
         try {
@@ -177,6 +194,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
                     this.onReceiveStatus(Data);
                     break;
                 case RequestInfo:
+                    if(requestTimeoutTimer!=null)requestTimeoutTimer.cancel();                    
                     this.onReceiveRequestInfo(Data);
                     break;
                 case Text:
@@ -194,6 +212,7 @@ public abstract class ChatWebSocket extends WebSocketClient {
     @Override
     public void onClose(int i, String string, boolean bln){
         this.onDisconnect();
+        this.requestTimeoutTimer.cancel();
     }
 
     @Override
