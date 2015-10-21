@@ -5,12 +5,13 @@
         <group>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/FbUserInfo.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/ChatWebSocket.java</file>
+            <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/test/CatchYouApi.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/ChatUser.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/UserInfo.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/ChatData.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/Education.java</file>
+            <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/ChatType.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/ScanLog.java</file>
-            <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/models/Cover.java</file>
             <file>file:/C:/Users/XuPeiYao/Documents/GitHub/CatchYouApi/src/org/catchyou/api/CatchYouSDK.java</file>
         </group>
     </open-files>

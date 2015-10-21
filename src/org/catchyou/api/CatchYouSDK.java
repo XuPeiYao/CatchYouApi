@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.catchyou.api.models.ChatData;
+import org.catchyou.api.models.IdMACPair;
 import org.json.serialization.DeserializeException;
 
 public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
@@ -40,10 +41,10 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
     public final String LOGIN = "LOGIN";
     public final String USERMAPPING = "USERMAPPING";
     public final String SCANLOGS = "SCANLOGS";
-    public final String USERMAPPING_CHAT = "USERMAPPING_CHAT";
     public final String CHAT_HISTORY_MESSAGE = "CHAT_HISTORY_MESSAGE";
     public final String CHAT_HISTORY_USERLIST = "CHAT_HISTORY_USERLIST";
-
+    public final String PTR_USERMAPPING_OBJECT = "PTR_USERMAPPING_OBJECT";
+    public final String PTR_USERMAPPING_KEYVALUE = "PTR_USERMAPPING_KEYVALUE";
     public String Token;
 
     public CatchYouSDK(String Token) {
@@ -151,6 +152,46 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return Result;
     }
     
+     public HashMap<String,String> PTRUserMapping_KeyValue(Object[] idList) throws JSONException, IOException, DeserializeException{
+        List<NameValuePair> Params = new ArrayList<NameValuePair>();
+
+        String MacListString = TextUtils.join(",", idList);
+            
+        Params.add(new BasicNameValuePair("idList", MacListString));
+        Params.add(new BasicNameValuePair("type", "keyvalue"));
+
+        JSONObject JSONResult = RequestApi(Host + "scan/PTRUserMapping", Params).getJSONObject("result");
+
+        HashMap<String, String> Result = new HashMap<String,String>();
+        Iterator Keys = JSONResult.keys();
+        while (Keys.hasNext()) {
+            String Key = (String) Keys.next();
+            Result.put(Key, JSONResult.getString(Key));
+        }
+
+        return Result;
+    }
+    
+     public ArrayList<IdMACPair> PTRUserMapping_Object(Object[] idList) throws JSONException, IOException, DeserializeException{
+        List<NameValuePair> Params = new ArrayList<NameValuePair>();
+
+        String MacListString = TextUtils.join(",", idList);
+            
+        Params.add(new BasicNameValuePair("idList", MacListString));
+        Params.add(new BasicNameValuePair("type", "object"));
+
+        JSONArray JSONResult = RequestApi(Host + "scan/PTRUserMapping", Params).getJSONArray("result");
+        
+        ArrayList<IdMACPair> Result = new ArrayList<IdMACPair>();
+
+        for (int i = 0; i < JSONResult.length(); i++) {
+            JSONObject obj = JSONResult.getJSONObject(i);
+            Result.add((IdMACPair) JSONConvert.deserialize(IdMACPair.class, obj));
+        }
+
+        return Result;
+    }
+     
     @Override
     protected Object doInBackground(Object... params) {
         try {
@@ -164,6 +205,10 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
                 return ChatUsers((int) params[1],(int)params[2]);
             } else if(params[0].equals(CHAT_HISTORY_MESSAGE)){
                 return ChatLogs((String)params[1],(long)params[2], (int)params[3], (int)params[4]);
+            } else if(params[0].equals(PTR_USERMAPPING_KEYVALUE)){
+                return PTRUserMapping_KeyValue((Object[]) params[1]);
+            } else if(params[0].equals(PTR_USERMAPPING_OBJECT)){
+                return PTRUserMapping_Object((Object[]) params[1]);
             }
         } catch (Exception e) {
             System.out.println(e);
