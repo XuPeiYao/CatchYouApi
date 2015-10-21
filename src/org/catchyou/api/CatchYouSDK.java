@@ -45,6 +45,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
     public final String CHAT_HISTORY_USERLIST = "CHAT_HISTORY_USERLIST";
     public final String PTR_USERMAPPING_OBJECT = "PTR_USERMAPPING_OBJECT";
     public final String PTR_USERMAPPING_KEYVALUE = "PTR_USERMAPPING_KEYVALUE";
+    public final String PTR_USERMAPPING_HASHMAP = "PTR_USERMAPPING_HASHMAP";
     public String Token;
 
     public CatchYouSDK(String Token) {
@@ -152,7 +153,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         return Result;
     }
     
-     public HashMap<String,String> PTRUserMapping_KeyValue(Object[] idList) throws JSONException, IOException, DeserializeException{
+    public HashMap<String,String> PTRUserMapping_KeyValue(Object[] idList) throws JSONException, IOException, DeserializeException{
         List<NameValuePair> Params = new ArrayList<NameValuePair>();
 
         String MacListString = TextUtils.join(",", idList);
@@ -167,6 +168,26 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         while (Keys.hasNext()) {
             String Key = (String) Keys.next();
             Result.put(Key, JSONResult.getString(Key));
+        }
+
+        return Result;
+    }
+    
+    public HashMap<String,UserInfo> PTRUserMapping_HashMap(Object[] idList) throws JSONException, IOException, DeserializeException{
+        List<NameValuePair> Params = new ArrayList<NameValuePair>();
+
+        String MacListString = TextUtils.join(",", idList);
+            
+        Params.add(new BasicNameValuePair("idList", MacListString));
+        Params.add(new BasicNameValuePair("type", "keyvalue"));
+
+        JSONObject JSONResult = RequestApi(Host + "scan/PTRUserMapping", Params).getJSONObject("result");
+
+        HashMap<String, UserInfo> Result = new HashMap<String,UserInfo>();
+        Iterator Keys = JSONResult.keys();
+        while (Keys.hasNext()) {
+            String Key = (String) Keys.next();
+            Result.put(Key,JSONConvert.deserialize(UserInfo.class,JSONResult.getJSONObject(Key)));
         }
 
         return Result;
@@ -209,6 +230,8 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
                 return PTRUserMapping_KeyValue((Object[]) params[1]);
             } else if(params[0].equals(PTR_USERMAPPING_OBJECT)){
                 return PTRUserMapping_Object((Object[]) params[1]);
+            }else if(params[0].equals(PTR_USERMAPPING_HASHMAP)){
+                return PTRUserMapping_HashMap((Object[]) params[1]);
             }
         } catch (Exception e) {
             System.out.println(e);
