@@ -21,8 +21,9 @@ public class ScanLog implements Serializable {
     @JSONProperty
     public long time;
 
-    public String getTimeString() {
+    public String getTimeString(){return getTimeString("yyyy-MM-dd HH:mm:ss");}
+    public String getTimeString(String format) {
         Date time_ = new Date(time);
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time_);
+        return new SimpleDateFormat(format).format(time_);
     }
 }
