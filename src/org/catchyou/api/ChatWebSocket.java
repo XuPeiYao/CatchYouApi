@@ -1,14 +1,9 @@
 package org.catchyou.api;
 
 import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.AsyncHttpProvider;
 import com.ning.http.client.ws.WebSocket;
-import com.ning.http.client.ws.WebSocketListener;
 import com.ning.http.client.ws.WebSocketTextListener;
 import com.ning.http.client.ws.WebSocketUpgradeHandler;
-import java.net.URI;
-import java.net.URISyntaxException;
 import org.catchyou.api.models.ChatData;
 import org.catchyou.api.models.ChatType;
 import org.json.JSONObject;
