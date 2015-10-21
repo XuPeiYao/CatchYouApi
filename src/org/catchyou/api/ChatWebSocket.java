@@ -1,5 +1,7 @@
 package org.catchyou.api;
 
+import android.os.AsyncTask;
+
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ws.WebSocket;
 import com.ning.http.client.ws.WebSocketTextListener;
@@ -19,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 public abstract class ChatWebSocket implements WebSocketTextListener{
     public final Object RequestUserData = null;
     public final boolean RequestUserInfoOK = true;
-    
+
     WebSocket websocket;
     String token;
     Timer timer;
@@ -49,12 +51,15 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
                     break;
             }
         } catch (Exception ex) {
-            
+
         }
     }
-    
+
     @Override
     public void onOpen(WebSocket ws) {
+        this.websocket = ws;
+//        System.out.println((ws ==null) + "GG");
+//        System.out.println("SOCKET IS OPEN>" + ws.isOpen());
         this.onConnect();
     }
 
@@ -65,7 +70,7 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
 
     @Override
     public abstract void onError(Throwable thrwbl);
-    
+
     /**
      * 當成功與CatchYou聊天API連線成功事件
      */
@@ -122,7 +127,7 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
         data.content = Content;
         this.send(data);
     }
-    
+
     /**
      * 對指定目標使用者送出文字訊息
      * @param TargetUId 目標使用者UId
@@ -185,40 +190,62 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
             timeout = defaultTimeout;
             this.websocket.sendMessage(JSONConvert.serialize(data).toString());
         }catch(Exception ex){
-            
+            System.out.println(ex.toString());
         }
     }
-    
+
     /**
      * 檢查WebSocket目前是否開啟中
      */
     public boolean isOpen(){
         return this.websocket.isOpen();
     }
-    
+
     /**
      * 開啟連線
      */
     public void open() throws InterruptedException, ExecutionException{
-        AsyncHttpClient client = new AsyncHttpClient();   
-        this.websocket = (WebSocket) client.prepareGet("ws://test.gofa.tw/api/chatroom/socket?token=" + token).execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener(this).build()).get();
-        if(timer != null)timer.cancel();
-        timer = new Timer(true);
-        timer.schedule(new TimerTask() {
+        AsyncTask k = new AsyncTask() {
+
             @Override
-            public void run() {
-                timeout--;
-                if(timeout > 0)return;
-                sendPing();
+            protected Object doInBackground(Object[] params) {
+                AsyncHttpClient client = new AsyncHttpClient();
+                try {
+                    websocket = (WebSocket) client.prepareGet("ws://test.gofa.tw/api/chatroom/socket?token=" + token).execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener((ChatWebSocket)params[0]).build()).get();
+                    return "Creat Websocket ok!";
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return null;
             }
-        }, 0,1000);
+
+            @Override
+            protected void onPostExecute(Object Result) {
+                System.out.println(Result);
+                if(timer != null)timer.cancel();
+                timer = new Timer(true);
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        timeout--;
+                        if (timeout > 0) return;
+                        sendPing();
+                    }
+                }, 0, 1000);
+            }
+        };
+        k.execute(this);
+
+
     }
-    
+
     /**
      * 關閉連線
      */
     public void close(){
         if(this.timer!=null)this.timer.cancel();
-        this.websocket.close();
+        if(this.websocket!=null)this.websocket.close();
     }
 }
