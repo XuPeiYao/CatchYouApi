@@ -198,7 +198,7 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
      * 檢查WebSocket目前是否開啟中
      */
     public boolean isOpen(){
-        return this.websocket.isOpen();
+        return this.websocket != null && this.websocket.isOpen();
     }
 
     /**

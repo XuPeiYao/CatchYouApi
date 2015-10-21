@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONObject;
 import org.json.serialization.DeserializeException;
 import org.json.serialization.JSONConvert;
 
@@ -37,8 +38,13 @@ public class ChatData implements Serializable {
         return null;
     }
     
-    public String getTimeString() {
+    public boolean isNullObject(){
+        return this.content.equals(JSONObject.NULL);
+    }
+    
+    public String getTimeString(){return getTimeString("yyyy-MM-dd HH:mm:ss");}
+    public String getTimeString(String format) {
         Date time_ = new Date(time);
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time_);
+        return new SimpleDateFormat(format).format(time_);
     }
 }
