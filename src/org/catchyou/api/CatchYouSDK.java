@@ -179,7 +179,7 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
         String MacListString = TextUtils.join(",", idList);
             
         Params.add(new BasicNameValuePair("idList", MacListString));
-        Params.add(new BasicNameValuePair("type", "keyvalue"));
+        Params.add(new BasicNameValuePair("type", "hashmap"));
 
         JSONObject JSONResult = RequestApi(Host + "scan/PTRUserMapping", Params).getJSONObject("result");
 
