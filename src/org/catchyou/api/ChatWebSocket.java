@@ -27,6 +27,8 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
     
     WebSocket websocket;
     String token;
+    Timer timer;
+    int timeout,defaultTimeout = 50;
 
     public ChatWebSocket(String Token) {
         this.token = Token;
@@ -185,6 +187,7 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
      */
     public void send(ChatData data) {
         try{
+            timeout = defaultTimeout;
             this.websocket.sendMessage(JSONConvert.serialize(data).toString());
         }catch(Exception ex){
             
@@ -204,12 +207,23 @@ public abstract class ChatWebSocket implements WebSocketTextListener{
     public void open() throws InterruptedException, ExecutionException{
         AsyncHttpClient client = new AsyncHttpClient();   
         this.websocket = (WebSocket) client.prepareGet("ws://test.gofa.tw/api/chatroom/socket?token=" + token).execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener(this).build()).get();
+        if(timer != null)timer.cancel();
+        timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                timeout--;
+                if(timeout > 0)return;
+                sendPing();
+            }
+        }, 0,1000);
     }
     
     /**
      * 關閉連線
      */
     public void close(){
+        if(this.timer!=null)this.timer.cancel();
         this.websocket.close();
     }
 }
