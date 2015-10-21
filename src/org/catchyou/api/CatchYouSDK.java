@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.catchyou.api.models.ChatData;
 import org.catchyou.api.models.IdMACPair;
+import org.catchyou.api.models.PTRType;
 import org.json.serialization.DeserializeException;
 
 public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
@@ -240,6 +241,36 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
     }
 
     protected abstract void onPostExecute(Object Result);
+    
+    public void registerMac(String Mac){
+        this.execute(this.LOGIN,Mac);
+    }
+    
+    public void userMapping(String[] MacList){
+        this.execute(this.USERMAPPING,MacList);
+    }
+    
+    public void scanLogs(long Time,int Index,int Length){
+        this.execute(this.SCANLOGS,Time,Index,Length);
+    }
+    
+    public void chatUsers(int Index,int Length){
+        this.execute(this.CHAT_HISTORY_USERLIST,Index,Length);
+    }
+    
+    public void chatMessage(long Time,int Index,int Length){
+        this.execute(this.CHAT_HISTORY_MESSAGE,Time,Index,Length);
+    }
+    
+    public void ptrUserMapping(PTRType Type,String[] IdList){
+        if(Type == PTRType.Object){
+            this.execute(this.PTR_USERMAPPING_OBJECT,IdList);
+        }else if(Type == PTRType.KeyValue){
+            this.execute(this.PTR_USERMAPPING_KEYVALUE,IdList);
+        }else if(Type == PTRType.HashMap){
+            this.execute(this.PTR_USERMAPPING_HASHMAP,IdList);
+        }
+    }
     
     private JSONObject RequestApi(String Url, List<NameValuePair> Params) throws JSONException, IOException {
         HttpClient Client = new DefaultHttpClient();

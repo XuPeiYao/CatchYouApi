@@ -1,7 +1,9 @@
 package org.catchyou.api;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ws.WebSocket;
+import com.ning.http.client.ws.WebSocketTextListener;
+import com.ning.http.client.ws.WebSocketUpgradeHandler;
 import org.catchyou.api.models.ChatData;
 import org.catchyou.api.models.ChatType;
 import org.json.JSONObject;
@@ -9,29 +11,61 @@ import org.json.serialization.JSONConvert;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import org.java_websocket.WebSocket;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.handshake.ServerHandshake;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by XuPeiYao on 2015/10/14.
  */
-public abstract class ChatWebSocket extends WebSocketClient {
+public abstract class ChatWebSocket implements WebSocketTextListener{
     public final Object RequestUserData = null;
     public final boolean RequestUserInfoOK = true;
     
-    Timer timeoutTimer;
-    Timer requestTimeoutTimer;
+    WebSocket websocket;
     String token;
-    int defaultTimeout = 50;
-    int timeout;
+    Timer timer;
+    int timeout,defaultTimeout = 50;
 
-    public ChatWebSocket(String Token) throws URISyntaxException {
-        super(new URI("ws://test.gofa.tw/api/chatroom/socket?token=" + Token),new Draft_17());
+    public ChatWebSocket(String Token) {
         this.token = Token;
     }
 
+    @Override
+    public void onMessage(String string) {
+        try {
+            ChatData Data = JSONConvert.deserialize(ChatData.class,new JSONObject(string));
+
+            switch(Data.type){
+                case Status:
+                    this.onReceiveStatus(Data);
+                    break;
+                case RequestInfo:
+                    this.onReceiveRequestInfo(Data);
+                    break;
+                case Text:
+                    this.onReceiveText(Data);
+                    break;
+                case Typing:
+                    this.onReceiveTyping(Data);
+                    break;
+            }
+        } catch (Exception ex) {
+            
+        }
+    }
+    
+    @Override
+    public void onOpen(WebSocket ws) {
+        this.onConnect();
+    }
+
+    @Override
+    public void onClose(WebSocket ws) {
+        this.onDisconnect();
+    }
+
+    @Override
+    public abstract void onError(Throwable thrwbl);
+    
     /**
      * 當成功與CatchYou聊天API連線成功事件
      */
@@ -89,16 +123,6 @@ public abstract class ChatWebSocket extends WebSocketClient {
         this.send(data);
     }
     
-    public void reTryRequestInfo(final String TargetUId,final Object Content){//我們曾經在這邊奮鬥
-        requestTimeoutTimer = new Timer(true);
-        requestTimeoutTimer.schedule(new TimerTask(){
-            @Override
-            public void run() {
-                sendRequestInfo(TargetUId, Content);
-            }            
-        },0,1000);
-    }
-
     /**
      * 對指定目標使用者送出文字訊息
      * @param TargetUId 目標使用者UId
@@ -158,63 +182,43 @@ public abstract class ChatWebSocket extends WebSocketClient {
      */
     public void send(ChatData data) {
         try{
-            this.timeout = this.defaultTimeout;
-            this.send(JSONConvert.serialize(data).toString());
+            timeout = defaultTimeout;
+            this.websocket.sendMessage(JSONConvert.serialize(data).toString());
         }catch(Exception ex){
             
         }
     }
-
-    @Override
-    public void onOpen(ServerHandshake sh){
-        timeout = defaultTimeout;
-        this.timeoutTimer = new Timer(true);
-        this.timeoutTimer.schedule(new TimerTask() {
+    
+    /**
+     * 檢查WebSocket目前是否開啟中
+     */
+    public boolean isOpen(){
+        return this.websocket.isOpen();
+    }
+    
+    /**
+     * 開啟連線
+     */
+    public void open() throws InterruptedException, ExecutionException{
+        AsyncHttpClient client = new AsyncHttpClient();   
+        this.websocket = (WebSocket) client.prepareGet("ws://test.gofa.tw/api/chatroom/socket?token=" + token).execute(new WebSocketUpgradeHandler.Builder().addWebSocketListener(this).build()).get();
+        if(timer != null)timer.cancel();
+        timer = new Timer(true);
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 timeout--;
                 if(timeout > 0)return;
                 sendPing();
             }
-        },0, 1000);
-        this.onConnect();
+        }, 0,1000);
     }
     
-    public boolean isOpen(){
-        return this.getReadyState() == WebSocket.READYSTATE.OPEN;
+    /**
+     * 關閉連線
+     */
+    public void close(){
+        if(this.timer!=null)this.timer.cancel();
+        this.websocket.close();
     }
-    
-    @Override
-    public void onMessage(String string) {
-        try {
-            ChatData Data = JSONConvert.deserialize(ChatData.class,new JSONObject(string));
-
-            switch(Data.type){
-                case Status:
-                    this.onReceiveStatus(Data);
-                    break;
-                case RequestInfo:
-                    if(requestTimeoutTimer!=null)requestTimeoutTimer.cancel();                    
-                    this.onReceiveRequestInfo(Data);
-                    break;
-                case Text:
-                    this.onReceiveText(Data);
-                    break;
-                case Typing:
-                    this.onReceiveTyping(Data);
-                    break;
-            }
-        } catch (Exception ex) {
-            
-        }
-    }
-
-    @Override
-    public void onClose(int i, String string, boolean bln){
-        this.onDisconnect();
-        this.requestTimeoutTimer.cancel();
-    }
-
-    @Override
-    public abstract void onError(Exception excptn);
 }
