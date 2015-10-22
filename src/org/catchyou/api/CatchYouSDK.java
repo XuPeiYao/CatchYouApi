@@ -233,14 +233,16 @@ public abstract class CatchYouSDK extends AsyncTask<Object, Integer, Object> {
                 return PTRUserMapping_Object((Object[]) params[1]);
             }else if(params[0].equals(PTR_USERMAPPING_HASHMAP)){
                 return PTRUserMapping_HashMap((Object[]) params[1]);
-            }
+            }return null;
         } catch (Exception e) {
-            System.out.println(e);
+            onException(e);
         }
         return null;
     }
 
     protected abstract void onPostExecute(Object Result);
+    
+    protected abstract void onException(Exception ex);
     
     public void registerMac(String Mac){
         this.execute(this.LOGIN,Mac);
